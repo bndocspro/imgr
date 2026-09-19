@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bilingual 3:4 Studio (Gemini 3.8 Live + SolaimanLipi)</title>
+
+    <!-- Google Web Fonts for Bengali & English -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Lora:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Noto+Serif+Bengali:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;600;700&family=Tiro+Bangla:ital@0;1&display=swap"
+        rel="stylesheet">
+
+    <!-- html2canvas for 3:4 High-Resolution lossless export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        @import url('https://fonts.maateen.me/solaiman-lipi/font.css');
+
+        /* ========================================================
+       WEB-FONT EMBEDDINGS (SolaimanLipi & Kalpurush)
+       ======================================================== */
+        @font-face {
+            font-family: 'Kalpurush';
+            src: url('https://cdn.jsdelivr.net/gh/maateen/kalpurush@master/kalpurush.woff') format('woff'),
+                url('https://cdn.jsdelivr.net/gh/maateen/kalpurush@master/kalpurush.ttf') format('truetype'),
+                local('Kalpurush');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --bg-dark: #090d16;
+            --panel-bg: rgba(18, 24, 40, 0.75);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --accent-red: #e61e4d;
+
+            /* Dynamic Typography Controls */
+            --selected-bn-font: 'SolaimanLipi', 'Noto Serif Bengali', serif;
+            --selected-en-font: 'Merriweather', Georgia, serif;
+            --body-font-size: 20px;
+            --title-font-size: 42px;
+            --line-height: 1.88;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #171b30 0%, var(--bg-dark) 100%);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 24px 60px;
+        }
+
+        .top-header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .top-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 40%, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .top-header p {
+            color: #94a3b8;
+            font-size: 13.5px;
+        }
+
+        /* Main Workspace 2-Column Layout */
+        .app-layout {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 28px;
+            width: 100%;
+            max-width: 1340px;
+            margin: 0 auto;
+        }
+
+        /* Left Sidebar: Controls Dashboard */
+        .dashboard-panel {
+            flex: 0 0 380px;
+            width: 380px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.6);
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .dashboard-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .dashboard-panel::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .panel-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #818cf8;
+            margin-bottom: 10px;
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .panel-section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .grid-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .grid-row.two-cols {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group label span.val-badge {
+            color: #818cf8;
+            font-weight: 700;
+            font-size: 11.5px;
+            background: rgba(129, 140, 248, 0.12);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        input,
+        select {
+            background: rgba(10, 15, 29, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 9px 11px;
+            color: #ffffff;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
+        }
+
+        .range-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(10, 15, 29, 0.85);
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .range-box input[type="range"] {
+            flex: 1;
+            cursor: pointer;
+            accent-color: #6366f1;
+            padding: 0;
+            background: transparent;
+            border: none;
+        }
+
+        /* Diagnostics Banner */
+        .status-banner {
+            width: 100%;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            margin-bottom: 12px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            line-height: 1.4;
+        }
+
+        .status-banner.info {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+            display: flex;
+        }
+
+        .status-banner.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+            display: flex;
+        }
+
+        .status-banner.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            display: flex;
+        }
+
+        /* Actions Bar */
+        .actions-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 14px;
+            margin-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .actions-btn-group {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .ws-status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 11.5px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            width: 100%;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #94a3b8;
+            flex-shrink: 0;
+        }
+
+        .status-dot.connected {
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        .status-dot.generating {
+            background: #f59e0b;
+            box-shadow: 0 0 10px #f59e0b;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from {
+                opacity: 0.4;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        button {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+            width: 100%;
+        }
+
+        .btn-generate:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: #ffffff;
+            width: 100%;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-download:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        /* ========================================================
+       PREVIEW CANVAS (EXACT 3:4 RATIO ON RIGHT)
+       ======================================================== */
+        .card-stage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 0;
+        }
+
+        /* Container maintaining exact 600x800 for html2canvas while scaling smoothly on screens */
+        .card-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        #printable-card {
+            width: 600px;
+            height: 800px;
+            /* EXACT 3:4 RATIO */
+            min-width: 600px;
+            min-height: 800px;
+            background: #ffffff;
+            padding: 55px 48px 45px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-title {
+            color: var(--accent-red);
+            font-family: var(--selected-en-font), var(--selected-bn-font), serif !important;
+            font-size: var(--title-font-size) !important;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 28px;
+            letter-spacing: -0.3px;
+            line-height: 1.25;
+            outline: none;
+        }
+
+        .card-content,
+        .card-content * {
+            font-family: var(--selected-en-font), var(--selected-bn-font), serif !important;
+            font-size: var(--body-font-size) !important;
+            line-height: var(--line-height) !important;
+        }
+
+        .card-content {
+            width: 100%;
+            color: #000000;
+            text-align: justify;
+            text-justify: inter-word;
+            word-break: break-word;
+            outline: none;
+        }
+
+        .hint-label {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1040px) {
+            .app-layout {
+                flex-direction: column;
+                align-items: center;
+                gap: 24px;
+            }
+
+            .dashboard-panel {
+                flex: none;
+                width: 100%;
+                max-width: 650px;
+                position: static;
+                max-height: none;
+            }
+
+            .grid-row {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .grid-row.two-cols {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+
+            .actions-btn-group {
+                flex-direction: row;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 16px 12px 40px;
+            }
+
+            .top-header h1 {
+                font-size: 22px;
+            }
+
+            .card-wrapper {
+                justify-content: flex-start;
+            }
+
+            .actions-btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="top-header">
+        <h1>Bilingual Paragraph Studio</h1>
+        <p>Real-time <strong>gemini-3.8-live</strong> WebSocket API &amp; Dynamic Font Customizer</p>
+    </header>
+
+    <!-- Side-by-side App Layout Container -->
+    <div class="app-layout">
+
+        <!-- Small Left-Side Controls Dashboard -->
+        <aside class="dashboard-panel">
+
+            <!-- Status Message Banner -->
+            <div id="statusBanner" class="status-banner"></div>
+
+            <!-- SECTION 1: FONTS & PRESETS -->
+            <div class="panel-section-title"><span>🔤</span> Typography &amp; Presets</div>
+            <div class="grid-row">
+                <div class="form-group">
+                    <label for="bnFontSelect">🇧🇩 Bengali Font</label>
+                    <select id="bnFontSelect">
+                        <option value="'SolaimanLipi', serif" selected>SolaimanLipi (সোলাইমানলিপি)</option>
+                        <option value="'Kalpurush', serif">Kalpurush (কালপুরুষ)</option>
+                        <option value="'Noto Serif Bengali', serif">Noto Serif Bengali (সেরিফ)</option>
+                        <option value="'Hind Siliguri', sans-serif">Hind Siliguri (হিন্দ শিলিগুড়ি)</option>
+                        <option value="'Tiro Bangla', serif">Tiro Bangla (তিরো বাংলা)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="enFontSelect">🇬🇧 English Font</label>
+                    <select id="enFontSelect">
+                        <option value="'Merriweather', Georgia, serif" selected>Merriweather (Classic Serif)</option>
+                        <option value="'Lora', serif">Lora (Modern Serif)</option>
+                        <option value="'Playfair Display', serif">Playfair Display (Display Serif)</option>
+                        <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans (Clean Modern)</option>
+                        <option value="'Georgia', serif">Georgia (System Serif)</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="topicSelect">📚 Built-in Preset (20+ Topics)</label>
+                    <select id="topicSelect"></select>
+                </div>
+            </div>
+
+            <!-- SECTION 2: FONT SIZES & SPACING -->
+            <div class="panel-section-title"><span>⚙️</span> Size &amp; Spacing</div>
+            <div class="grid-row two-cols">
+                <div class="form-group">
+                    <label>Body Size <span class="val-badge" id="bodyFontVal">20px</span></label>
+                    <div class="range-box">
+                        <input type="range" id="bodyFontSlider" min="12" max="32" value="20" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Title Size <span class="val-badge" id="titleFontVal">42px</span></label>
+                    <div class="range-box">
+                        <input type="range" id="titleFontSlider" min="24" max="56" value="42" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row">
+                <div class="form-group">
+                    <label>↕️ Line Spacing <span class="val-badge" id="lineHeightVal">1.88</span></label>
+                    <div class="range-box">
+                        <input type="range" id="lineHeightSlider" min="1.4" max="2.4" step="0.04" value="1.88" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: GEMINI AI & GENERATION -->
+            <div class="panel-section-title"><span>✨</span> AI Generation</div>
+            <div class="grid-row">
+                <div class="form-group">
+                    <label>🤖 Model</label>
+                    <input type="text" value="gemini-3.8-live (Live WebSocket)" readonly
+                        style="background: rgba(129, 140, 248, 0.08); border-color: rgba(129, 140, 248, 0.3); color: #c7d2fe; font-weight: 600;" />
+                </div>
+
+                <div class="form-group">
+                    <label for="apiKeyInput">🔑 Gemini API Key</label>
+                    <input type="password" id="apiKeyInput" placeholder="AIzaSy... (Google AI Studio)" />
+                </div>
+
+                <div class="form-group">
+                    <label for="customPrompt">✍️ Custom Topic / Prompt</label>
+                    <input type="text" id="customPrompt" placeholder="e.g. Benefits of Reading, Digital Bangladesh" />
+                </div>
+            </div>
+
+            <!-- SECTION 4: ACTIONS & DOWNLOAD -->
+            <div class="actions-bar">
+                <div class="ws-status-badge">
+                    <span class="status-dot" id="wsStatusDot"></span>
+                    <span id="wsStatusText">Status: Idle</span>
+                </div>
+
+                <button class="btn-generate" id="startGenerateBtn">
+                    <span>⚡</span> Generate with AI
+                </button>
+
+                <button class="btn-download" id="downloadPngBtn">
+                    <span>📥</span> Download 3:4 PNG
+                </button>
+            </div>
+        </aside>
+
+        <!-- Right-Side 3:4 Preview Stage -->
+        <main class="card-stage">
+            <div class="card-wrapper">
+                <div id="printable-card">
+                    <h1 class="card-title" id="cardTitle" contenteditable="true" spellcheck="false">My Daily Life</h1>
+                    <div class="card-content" id="cardBody" contenteditable="true" spellcheck="false">
+                        I wake up early in the morning at 6:00 AM (আমি প্রতিদিন সকাল ৬টায় ঘুম থেকে উঠি)। After
+                        breakfast, I study for an hour and then go to school at 9:30 AM (সকালের নাস্তার পর, আমি এক ঘণ্টা
+                        পড়াশোনা করি এবং তারপর সকাল ৯:৩০ মিনিটে স্কুলে যাই)। I attend all my classes attentively (আমি
+                        মনোযোগ সহকারে আমার সব ক্লাসে অংশ নিই)। I return home in the afternoon and play with my friends
+                        (আমি বিকেলে বাড়ি ফিরে বন্ধুদের সাথে খেলাধুলা করি)। In the evening, I finish my homework and read
+                        until 9:30 PM (সন্ধ্যায়, আমি বাড়ির কাজ শেষ করি এবং রাত ৯:৩০ মিনিট পর্যন্ত পড়াশোনা করি)। After
+                        having dinner with my family, I go to bed by 10:00 PM (পরিবারের সাথে রাতের খাবার খেয়ে আমি রাত
+                        ১০টার মধ্যে ঘুমাতে যাই)।
+                    </div>
+                </div>
+            </div>
+            <p class="hint-label">💡 All text is directly editable on click. Fonts and sizes update live on the card.
+            </p>
+        </main>
+
+    </div>
+
+    <script>
+        // 22 Pre-stored Presets
+        const ESSAY_PRESETS = [
+            {
+                title: "My Daily Life",
+                content: "I wake up early in the morning at 6:00 AM (আমি প্রতিদিন সকাল ৬টায় ঘুম থেকে উঠি)। After breakfast, I study for an hour and then go to school at 9:30 AM (সকালের নাস্তার পর, আমি এক ঘণ্টা পড়াশোনা করি এবং তারপর সকাল ৯:৩০ মিনিটে স্কুলে যাই)। I attend all my classes attentively (আমি মনোযোগ সহকারে আমার সব ক্লাসে অংশ নিই)। I return home in the afternoon and play with my friends (আমি বিকেলে বাড়ি ফিরে বন্ধুদের সাথে খেলাধুলা করি)। In the evening, I finish my homework and read until 9:30 PM (সন্ধ্যায়, আমি বাড়ির কাজ শেষ করি এবং রাত ৯:৩০ মিনিট পর্যন্ত পড়াশোনা করি)। After having dinner with my family, I go to bed by 10:00 PM (পরিবারের সাথে রাতের খাবার খেয়ে আমি রাত ১০টার মধ্যে ঘুমাতে যাই)।"
+            },
+            {
+                title: "My Hobby",
+                content: "My favorite hobby is gardening (আমার প্রিয় শখ হলো বাগান করা)। I have a small flower garden in front of our house (আমাদের বাড়ির সামনে আমার একটি ছোট ফুলের বাগান আছে)। Every morning and afternoon, I water the plants and take care of them (প্রতিদিন সকালে ও বিকেলে আমি গাছে পানি দিই এবং তাদের যত্ন নিই)। Gardening keeps my mind fresh and cheerful (বাগান করা আমার মনকে সতেজ ও প্রফুল্ল রাখে)।"
+            },
+            {
+                title: "Myself",
+                content: "My name is Tanvir and I am a dedicated student (আমার নাম তানভীর এবং আমি একজন নিয়মিত শিক্ষার্থী)। I always try to lead an honest, disciplined, and simple life (আমি সবসময় একটি সৎ, সুশৃঙ্খল ও সহজ-সরল জীবনযাপন করার চেষ্টা করি)। Reading good storybooks and learning new skills are my favorite passions (ভালো গল্পের বই পড়া এবং নতুন দক্ষতা শেখা আমার প্রিয় কাজ)। I respect all my teachers and love my dear parents deeply (আমি আমার শিক্ষকদের সম্মান করি এবং পিতামাতাকে গভীরভাবে ভালোবাসি)।"
+            },
+            {
+                title: "My School",
+                content: "The name of my beloved school is Model High School (আমার প্রিয় বিদ্যালয়ের নাম মডেল হাই স্কুল)। It is situated in a calm, green, and pleasant environment (এটি একটি শান্ত, সবুজ এবং মনোরম পরিবেশে অবস্থিত)। The teachers in our school are exceptionally kind and helpful (আমাদের বিদ্যালয়ের শিক্ষকগণ অত্যন্ত দয়ালু এবং সহায়ক)। I feel genuinely proud to be a student of this school (এই বিদ্যালয়ের একজন শিক্ষার্থী হতে পেরে আমি সত্যিই গর্ববোধ করি)।"
+            },
+            {
+                title: "My Classmate",
+                content: "Rahim is one of my closest and dearest classmates (রহিম আমার অন্যতম ঘনিষ্ঠ ও প্রিয় সহপাঠী)। We sit on the same bench and share our study notes (আমরা একই বেঞ্চে বসি এবং আমাদের পড়ার নোটগুলো একে অপরের সাথে ভাগ করে নিই)। He is very polite, honest, and hardworking in his studies (সে আচরণে অত্যন্ত বিনম্র, সৎ এবং পড়াশোনায় পরিশ্রমী)। Whenever I face any difficulty in lessons, he always assists me (পড়াশোনায় কোনো সমস্যায় পড়লে সে সর্বদা আমাকে সাহায্য করে)।"
+            },
+            {
+                title: "My Family",
+                content: "I live in a small, loving, and happy family (আমি একটি ছোট, স্নেহময় ও সুখী পরিবারে বাস করি)। There are four members in our family: my parents, my sister, and myself (আমাদের পরিবারে চারজন সদস্য আছেন: আমার বাবা-মা, আমার বোন এবং আমি)। We love, respect, and support one another in every situation (আমরা প্রতিটি পরিস্থিতিতে একে অপরকে ভালোবাসি, সম্মান করি এবং সহযোগিতা করি)। My family is indeed the sweetest shelter and blessing of my life (আমার পরিবার বাস্তবিকই আমার জীবনের সবচেয়ে মিষ্টি আশ্রয় ও আশীর্বাদ)।"
+            },
+            {
+                title: "My Best Friend",
+                content: "A true friend is a great blessing in our earthly life (একজন প্রকৃত বন্ধু পার্থিব জীবনে এক বিরাট আশীর্বাদ)। Sifat is my best friend whom I trust completely (সিফাত আমার সবচেয়ে ভালো বন্ধু যাকে আমি পুরোপুরি বিশ্বাস করি)। We play together, study together, and share our happiness and sorrow (আমরা একসাথে খেলাধুলা করি, একসাথে পড়াশোনা করি এবং সুখ-দুঃখ ভাগ করে নিই)। He always stands firmly by my side whenever I am in need (আমার যেকোনো প্রয়োজনে সে সবসময় দৃঢ়ভাবে আমার পাশে থাকে)।"
+            },
+            {
+                title: "My Village",
+                content: "The name of my native village is Sonapur (আমার জন্মভূমির গ্রামের নাম সোনাপুর)। It is surrounded by lush green trees and a gentle flowing river (এটি সবুজ গাছপালা এবং একটি ধীরগতির নদী দ্বারা পরিবেষ্টিত)। The village people lead a very simple and peaceful life (গ্রামের মানুষ অত্যন্ত সহজ-সরল ও শান্তিপূর্ণ জীবনযাপন করেন)। The fresh clean air and scenic beauty make it a truly wonderful place (বিশুদ্ধ নির্মল বাতাস এবং প্রাকৃতিক দৃশ্য এটিকে সত্যিই চমৎকার একটি স্থান করে তুলেছে)।"
+            },
+            {
+                title: "My Mother",
+                content: "My mother is the most loving and caring person in my life (আমার মা আমার জীবনের সবচেয়ে স্নেহময়ী ও যত্নশীল মানুষ)। She wakes up early in the morning and prepares delicious food for us (তিনি খুব সকালে ঘুম থেকে ওঠেন এবং আমাদের জন্য সুস্বাদু খাবার তৈরি করেন)। When I fall ill, she stays awake beside me all night (আমি অসুস্থ হয়ে পড়লে তিনি সারা রাত আমার পাশে জেগে থাকেন)। I pray to Almighty Allah for her long and healthy life (আমি পরম করুণাময়ের কাছে তাঁর দীর্ঘ ও সুস্থ জীবনের জন্য প্রার্থনা করি)।"
+            },
+            {
+                title: "My Father",
+                content: "My father is my greatest hero and genuine guide (আমার বাবা আমার সেরা আদর্শ এবং প্রকৃত পথপ্রদর্শক)। He works tirelessly every single day to support our family (আমাদের পরিবারের ভরণপোষণের জন্য তিনি প্রতিদিন অক্লান্ত পরিশ্রম করেন)। He taught me the true value of honesty, discipline, and hard work (তিনি আমাকে সততা, শৃঙ্খলা ও কঠোর পরিশ্রমের প্রকৃত মূল্য শিখিয়েছেন)। I love and respect my father more than words can say (আমি আমার বাবাকে কথার চেয়েও অনেক বেশি ভালোবাসি ও সম্মান করি)।"
+            },
+            {
+                title: "Early Rising",
+                content: "Early rising is an exceptionally good and healthy habit (ভোরে ঘুম থেকে ওঠা একটি অসাধারণ ভালো ও স্বাস্থ্যকর অভ্যাস)। A person who rises early gets plenty of time to work (যে ব্যক্তি ভোরে ঘুম থেকে ওঠে সে কাজ করার জন্য প্রচুর সময় পায়)। The fresh morning breeze invigorates both body and soul (সকালের স্নিগ্ধ হাওয়া শরীর ও মন উভয়কেই সতেজ করে তোলে)। This beneficial habit is the key to sound health and prosperity (এই উপকারী অভ্যাসটি সুস্বাস্থ্য ও সমৃদ্ধির মূল চাবিকাঠি)।"
+            },
+            {
+                title: "A Rainy Day",
+                content: "A rainy day is usually dark, cloudy, and wet (একটি বৃষ্টির দিন সাধারণত অন্ধকারাচ্ছন্ন, মেঘলা ও ভেজা থাকে)। The sky remains covered with thick black clouds and it rains incessantly (আকাশ ঘন কালো মেঘে ঢাকা থাকে এবং অবিরাম বৃষ্টি ঝরে)। School going children often get drenched and enjoy the refreshing weather (স্কুলগামী শিশুরা প্রায়ই ভিজে যায় এবং এই সতেজ আবহাওয়া উপভোগ করে)। Sitting beside the window and watching the rain gives me immense joy (জানালার পাশে বসে বৃষ্টি দেখা আমাকে অসীম আনন্দ দেয়)।"
+            },
+            {
+                title: "A Winter Morning",
+                content: "A winter morning is misty, cold, and quiet (শীতের সকাল থাকে কুয়াশাচ্ছন্ন, শীতল ও শান্ত)। Nature wears a blanket of dense fog until the bright sun rises (উজ্জ্বল সূর্য ওঠার আগ পর্যন্ত প্রকৃতি ঘন কুয়াশার চাদর গায়ে জড়িয়ে থাকে)। People love to bask in the warm sunshine and drink delicious date juice (মানুষ মিষ্টি রোদ পোহাতে এবং সুস্বাদু খেজুরের রস পান করতে ভালোবাসে)। Eating hot homemade rice cakes is a common tradition in our country (গরম গরম ঘরের তৈরি পিঠা খাওয়া আমাদের দেশের একটি সাধারণ ঐতিহ্য)।"
+            },
+            {
+                title: "A Tea Stall",
+                content: "A tea stall is a popular small shop found at every street corner (চা স্টল হলো একটি জনপ্রিয় ছোট দোকান যা প্রতিটি রাস্তার মোড়ে দেখা যায়)। Hot tea, biscuits, bread, and betel leaves are commonly sold here (এখানে গরম চা, বিস্কুট, রুটি এবং পান বিক্রি হয়)। People gather here to chat about sports, daily life, and politics (মানুষ খেলাধুলা, দৈনন্দিন জীবন ও রাজনীতি নিয়ে আড্ডা দেওয়ার জন্য এখানে জড়ো হয়)। It is a lively meeting place for common people from all walks of life (এটি সর্বস্তরের সাধারণ মানুষের একটি প্রাণবন্ত মিলনমেলা)।"
+            },
+            {
+                title: "Tree Plantation",
+                content: "Tree plantation means planting more and more trees across the country (বৃক্ষরোপণ মানে দেশের বিভিন্ন স্থানে বেশি বেশি গাছ লাগানো)। Trees give us oxygen, food, wood, and life-saving medicines (গাছ আমাদের অক্সিজেন, খাবার, কাঠ এবং জীবনরক্ষাকারী ওষুধ দেয়)। They protect our environment from devastating natural disasters (তারা আমাদের পরিবেশকে বিধ্বংসী প্রাকৃতিক দুর্যোগ থেকে রক্ষা করে)। We should plant trees regularly to make our earth greener and safer (আমাদের পৃথিবীকে আরও সবুজ ও নিরাপদ করতে আমাদের নিয়মিত গাছ লাগানো উচিত)।"
+            },
+            {
+                title: "A Book Fair",
+                content: "A book fair is an attractive exhibition where numerous books are displayed (বইমেলা একটি আকর্ষণীয় প্রদর্শনী যেখানে অসংখ্য বই প্রদর্শিত হয়)। Writers, poets, and readers of all ages gather together joyfully (লেখক, কবি এবং সব বয়সী পাঠকেরা অত্যন্ত আনন্দের সাথে এখানে সমবেত হন)। It expands our horizon of knowledge and encourages reading habits (এটি আমাদের জ্ঞানের পরিধি বিস্তৃত করে এবং বই পড়ার অভ্যাসকে উৎসাহিত করে)। I always wait eagerly for our annual book fair (আমি প্রতি বছর বার্ষিক বইমেলার জন্য অধীর আগ্রহে অপেক্ষা করি)।"
+            },
+            {
+                title: "Our National Flag",
+                content: "Our national flag is the supreme symbol of our independence and dignity (আমাদের জাতীয় পতাকা আমাদের স্বাধীনতা ও মর্যাদার সর্বোচ্চ প্রতীক)। It consists of a vibrant red circle inside a green rectangular background (এটি সবুজ আয়তাকার পটভূমির মাঝে একটি উজ্জ্বল লাল বৃত্ত নিয়ে গঠিত)। The green represents our fertile land, while the red stands for brave sacrifices (সবুজ আমাদের উর্বর দেশকে প্রকাশ করে, আর লাল বীর শহীদদের আত্মত্যাগের প্রতীক)। We honor and salute our national flag with profound reverence (আমরা গভীর শ্রদ্ধার সাথে আমাদের জাতীয় পতাকাকে সম্মান ও স্যালুট জানাই)।"
+            },
+            {
+                title: "Mobile Phone",
+                content: "A mobile phone is an indispensable gift of modern science (মোবাইল ফোন আধুনিক বিজ্ঞানের এক অপরিহার্য উপহার)। It allows us to communicate with people across the globe within seconds (এটি আমাদের সেকেন্ডের মধ্যে বিশ্বজুড়ে মানুষের সাথে যোগাযোগ করতে সাহায্য করে)। We can browse educational materials, pay bills, and enjoy audio-visual entertainment (আমরা শিক্ষণীয় বিষয় অনুসন্ধান করতে, বিল পরিশোধ করতে এবং বিনোদন উপভোগ করতে পারি)। However, we must use it carefully and avoid wasting precious study hours (তবুও আমাদের এটি সাবধানে ব্যবহার করতে হবে এবং পড়ার মূল্যবান সময় নষ্ট করা এড়াতে হবে)।"
+            },
+            {
+                title: "The Internet",
+                content: "The internet has turned our vast planet into a tiny global village (ইন্টারনেট আমাদের বিশাল পৃথিবীকে একটি ছোট্ট বৈশ্বিক গ্রামে পরিণত করেছে)। Information on any topic is now accessible at the click of a button (যেকোনো বিষয়ের তথ্য এখন একটি বোতামের ক্লিকেই পাওয়া যায়)। It drives modern international trade, healthcare, and distance learning (এটি আধুনিক আন্তর্জাতিক বাণিজ্য, চিকিৎসা এবং দূরশিক্ষণ পরিচালনা করে)। Wise utilization of internet empowers youths with tremendous capability (ইন্টারনেটের সুবিবেচনাপ্রসূত ব্যবহার তরুণ সমাজকে প্রভূত সামর্থ্যে বলীয়ান করে)।"
+            },
+            {
+                title: "Importance of Learning English",
+                content: "English is an international language spoken and understood across the globe (ইংরেজি একটি আন্তর্জাতিক ভাষা যা বিশ্বজুড়ে বলা ও বোঝা হয়)। To acquire higher education and secure a bright career, English is essential (উচ্চশিক্ষা অর্জন এবং একটি উজ্জ্বল ক্যারিয়ার নিশ্চিত করতে ইংরেজি অত্যন্ত আবশ্যক)। It enables us to communicate effortlessly with foreigners and business partners (এটি আমাদের বিদেশিদের এবং ব্যবসায়িক অংশীদারদের সাথে সহজে যোগাযোগ করতে সক্ষম করে)। Every student should practice reading and speaking English regularly (প্রত্যেক শিক্ষার্থীর নিয়মিত ইংরেজি পড়া এবং বলার অনুশীলন করা উচিত)।"
+            },
+            {
+                title: "My Pet Animal",
+                content: "I have a cute little pet cat named Mini (আমার মিনি নামের একটি মিষ্টি ছোট্ট পোষা বিড়াল আছে)। Her soft fur is milky white and her eyes sparkle like gems (তার নরম পশম দুধের মতো সাদা এবং তার চোখগুলো রত্নের মতো জ্বলজ্বল করে)। She loves drinking fresh milk and playing with balls of yarn (সে তাজা দুধ খেতে এবং সুতার বল নিয়ে খেলতে খুব ভালোবাসে)। Having her around brings immense happiness and peace to our home (তাকে পাশে পাওয়া আমাদের ঘরে অসীম সুখ ও শান্তি বয়ে আনে)।"
+            },
+            {
+                title: "Physical Exercise",
+                content: "Physical exercise is vital for maintaining good health and active body (সুস্বাস্থ্য ও কর্মক্ষম শরীর বজায় রাখার জন্য শারীরিক ব্যায়াম অত্যন্ত জরুরি)। It strengthens our muscles, relieves stress, and improves blood circulation (এটি আমাদের পেশিকে শক্তিশালী করে, মানসিক চাপ কমায় এবং রক্ত সঞ্চালন বাড়ায়)। Regular exercise keeps us energetic and prevents harmful sickness (নিয়মিত ব্যায়াম আমাদের উদ্যমী রাখে এবং ক্ষতিকর রোগবালাই প্রতিরোধ করে)। A healthy mind resides only inside a physically healthy body (একটি সুস্থ মন কেবল একটি শারীরিকভাবে সুস্থ দেহের ভেতরেই বিরাজ করে)।"
+            }
+        ];
+
+        // DOM Elements
+        const bnFontSelect = document.getElementById('bnFontSelect');
+        const enFontSelect = document.getElementById('enFontSelect');
+        const topicSelect = document.getElementById('topicSelect');
+        const cardTitle = document.getElementById('cardTitle');
+        const cardBody = document.getElementById('cardBody');
+        const printableCard = document.getElementById('printable-card');
+
+        const bodyFontSlider = document.getElementById('bodyFontSlider');
+        const bodyFontVal = document.getElementById('bodyFontVal');
+        const titleFontSlider = document.getElementById('titleFontSlider');
+        const titleFontVal = document.getElementById('titleFontVal');
+        const lineHeightSlider = document.getElementById('lineHeightSlider');
+        const lineHeightVal = document.getElementById('lineHeightVal');
+
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const customPrompt = document.getElementById('customPrompt');
+        const startGenerateBtn = document.getElementById('startGenerateBtn');
+        const wsStatusDot = document.getElementById('wsStatusDot');
+        const wsStatusText = document.getElementById('wsStatusText');
+        const statusBanner = document.getElementById('statusBanner');
+        const downloadPngBtn = document.getElementById('downloadPngBtn');
+
+        // Populate dropdown
+        ESSAY_PRESETS.forEach((item, index) => {
+            const opt = document.createElement('option');
+            opt.value = index;
+            opt.textContent = `${index + 1}. ${item.title}`;
+            topicSelect.appendChild(opt);
+        });
+
+        topicSelect.addEventListener('change', (e) => {
+            const item = ESSAY_PRESETS[e.target.value];
+            cardTitle.textContent = item.title;
+            cardBody.textContent = item.content;
+            customPrompt.value = item.title;
+        });
+
+        // Typography updater
+        function applyFontStyles() {
+            document.documentElement.style.setProperty('--selected-bn-font', bnFontSelect.value);
+            document.documentElement.style.setProperty('--selected-en-font', enFontSelect.value);
+
+            const bSize = bodyFontSlider.value + 'px';
+            const tSize = titleFontSlider.value + 'px';
+            const lHeight = lineHeightSlider.value;
+
+            document.documentElement.style.setProperty('--body-font-size', bSize);
+            document.documentElement.style.setProperty('--title-font-size', tSize);
+            document.documentElement.style.setProperty('--line-height', lHeight);
+
+            bodyFontVal.textContent = bSize;
+            titleFontVal.textContent = tSize;
+            lineHeightVal.textContent = lHeight;
+        }
+
+        bnFontSelect.addEventListener('change', applyFontStyles);
+        enFontSelect.addEventListener('change', applyFontStyles);
+        bodyFontSlider.addEventListener('input', applyFontStyles);
+        titleFontSlider.addEventListener('input', applyFontStyles);
+        lineHeightSlider.addEventListener('input', applyFontStyles);
+        applyFontStyles();
+
+        // ========================================================
+        // INDEXEDDB STORAGE FOR API KEY
+        // ========================================================
+        const DB_NAME = 'BilingualStudioDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'settings';
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_NAME, DB_VERSION);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        async function getStoredApiKey() {
+            try {
+                const db = await openDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readonly');
+                    const store = tx.objectStore(STORE_NAME);
+                    const req = store.get('gemini_api_key');
+                    req.onsuccess = () => resolve(req.result || '');
+                    req.onerror = () => reject(req.error);
+                });
+            } catch (err) {
+                console.warn('IndexedDB read error, falling back to localStorage:', err);
+                return localStorage.getItem('gemini_api_key') || '';
+            }
+        }
+
+        async function setStoredApiKey(key) {
+            try {
+                const db = await openDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readwrite');
+                    const store = tx.objectStore(STORE_NAME);
+                    const req = store.put(key, 'gemini_api_key');
+                    req.onsuccess = () => resolve(true);
+                    req.onerror = () => reject(req.error);
+                });
+            } catch (err) {
+                console.warn('IndexedDB write error, falling back to localStorage:', err);
+                localStorage.setItem('gemini_api_key', key);
+            }
+        }
+
+        // Auto-load saved API key on startup
+        getStoredApiKey().then(savedKey => {
+            if (savedKey) {
+                apiKeyInput.value = savedKey;
+            }
+        });
+
+        // Auto-save API key whenever user edits it
+        apiKeyInput.addEventListener('input', () => {
+            setStoredApiKey(apiKeyInput.value.trim());
+        });
+        apiKeyInput.addEventListener('change', () => {
+            setStoredApiKey(apiKeyInput.value.trim());
+        });
+
+        // UI Diagnostics Helper
+        function showBanner(type, message) {
+            statusBanner.className = `status-banner ${type}`;
+            statusBanner.innerHTML = message;
+        }
+
+        function setStatus(state, message) {
+            wsStatusDot.className = 'status-dot ' + state;
+            wsStatusText.textContent = message;
+        }
+
+        // ========================================================
+        // AI GENERATOR (EXCLUSIVE GEMINI-3.8-LIVE WEBSOCKET PIPELINE)
+        // ========================================================
+        let activeSocket = null;
+
+        startGenerateBtn.addEventListener('click', async () => {
+            let apiKey = apiKeyInput.value.trim();
+            if (!apiKey) {
+                apiKey = await getStoredApiKey();
+            }
+
+            const topic = customPrompt.value.trim() || cardTitle.textContent.trim();
+
+            if (!apiKey) {
+                showBanner('error', '⚠️ <strong>API Key Required:</strong> Please paste your Google Gemini API Key from <a href="https://aistudio.google.com" target="_blank" style="color:inherit;text-decoration:underline;">Google AI Studio</a>.');
+                apiKeyInput.focus();
+                return;
+            }
+
+            // Ensure latest key is persisted
+            setStoredApiKey(apiKey);
+
+            startGenerateBtn.disabled = true;
+            showBanner('info', `⏳ Connecting to <strong>gemini-3.8-live</strong> for: <strong>"${topic}"</strong>...`);
+            executeWebSocketGeneration(apiKey, topic);
+        });
+
+        // Dedicated WebSocket Handler for gemini-3.8-live
+        function executeWebSocketGeneration(apiKey, topic) {
+            if (activeSocket) {
+                try { activeSocket.close(); } catch(e) {}
+                activeSocket = null;
+            }
+
+            setStatus('generating', 'Connecting to gemini-3.8-live...');
+            cardTitle.textContent = topic;
+            cardBody.textContent = "Connecting to Gemini 3.8 Live...";
+
+            // v1beta endpoint for Gemini Live Bidirectional WebSocket API
+            const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${apiKey}`;
+
+            let setupAcknowledged = false;
+            let receivedAnyText = false;
+            let connectionTimeout = null;
+
+            try {
+                activeSocket = new WebSocket(wsUrl);
+
+                // Set a timeout to catch stuck connections
+                connectionTimeout = setTimeout(() => {
+                    if (!setupAcknowledged && !receivedAnyText) {
+                        setStatus('', 'Timeout');
+                        showBanner('error', '⚠️ <strong>Connection Timeout:</strong> The WebSocket server did not respond in time. Please check your API key and network.');
+                        startGenerateBtn.disabled = false;
+                        if (activeSocket) {
+                            try { activeSocket.close(); } catch(e) {}
+                        }
+                    }
+                }, 15000);
+
+                activeSocket.onopen = () => {
+                    setStatus('generating', 'Connected! Initializing session...');
+                    showBanner('info', '⚡ WebSocket opened. Sending setup config to <code>gemini-3.8-live</code>...');
+
+                    // Session Configuration for gemini-3.8-live (Requires AUDIO response modality with text transcription)
+                    const setupMsg = {
+                        setup: {
+                            model: "models/gemini-3.8-live",
+                            generationConfig: {
+                                responseModalities: ["AUDIO"]
+                            },
+                            systemInstruction: {
+                                parts: [{
+                                    text: `You are an expert bilingual educational writer and translator.
+Write a concise 5 to 6 sentence short essay paragraph on the specified topic.
+Formatting instructions:
+1. Every English sentence MUST be followed immediately by its accurate Bengali translation in parentheses with Bengali dāri (।).
+Example:
+I wake up early in the morning at 6:00 AM (আমি প্রতিদিন সকাল ৬টায় ঘুম থেকে উঠি)। After breakfast, I study for an hour (সকালের নাস্তার পর, আমি এক ঘণ্টা পড়াশোনা করি)।
+2. Output only pure continuous paragraph text. Do NOT output headings, bullet lists, markdown bold stars (**), or intro/outro conversational remarks.`
+                                }]
+                            }
+                        }
+                    };
+
+                    activeSocket.send(JSON.stringify(setupMsg));
+                };
+
+                activeSocket.onmessage = async (event) => {
+                    let msg;
+                    try {
+                        let text = '';
+                        if (event.data instanceof Blob) {
+                            text = await event.data.text();
+                        } else if (typeof event.data === 'string') {
+                            text = event.data;
+                        } else if (event.data instanceof ArrayBuffer) {
+                            text = new TextDecoder().decode(event.data);
+                        }
+                        msg = JSON.parse(text);
+                    } catch (e) {
+                        return;
+                    }
+
+                    // Step 1: Handle Setup Confirmation
+                    if (msg.setupComplete) {
+                        clearTimeout(connectionTimeout);
+                        setupAcknowledged = true;
+                        cardBody.textContent = "";
+                        setStatus('generating', 'Session ready. Submitting input...');
+                        showBanner('info', `✍️ Session established. Generating text for: <strong>"${topic}"</strong>...`);
+
+                        // Send user input prompt to gemini-3.8-live
+                        const clientTurnMsg = {
+                            clientContent: {
+                                turns: [
+                                    {
+                                        role: "user",
+                                        parts: [{ text: `Topic: "${topic}". Write the bilingual paragraph text now.` }]
+                                    }
+                                ],
+                                turnComplete: true
+                            }
+                        };
+                        activeSocket.send(JSON.stringify(clientTurnMsg));
+                        setStatus('generating', 'Streaming text from gemini-3.8-live...');
+                        return;
+                    }
+
+                    // Step 2: Stream live transcriptions & text parts from gemini-3.8-live
+                    if (msg.serverContent) {
+                        clearTimeout(connectionTimeout);
+
+                        // Capture live text transcription stream
+                        if (msg.serverContent.outputTranscription && msg.serverContent.outputTranscription.text) {
+                            if (!receivedAnyText) {
+                                cardBody.textContent = "";
+                                receivedAnyText = true;
+                            }
+                            cardBody.textContent += msg.serverContent.outputTranscription.text;
+                        }
+
+                        // Also check modelTurn parts text if provided
+                        if (msg.serverContent.modelTurn && msg.serverContent.modelTurn.parts) {
+                            for (const part of msg.serverContent.modelTurn.parts) {
+                                if (part.text) {
+                                    if (!receivedAnyText) {
+                                        cardBody.textContent = "";
+                                        receivedAnyText = true;
+                                    }
+                                    cardBody.textContent += part.text;
+                                }
+                            }
+                        }
+
+                        // Step 3: Handle Turn Completion
+                        if (msg.serverContent.turnComplete) {
+                            clearTimeout(connectionTimeout);
+                            setStatus('connected', 'Live Stream Completed');
+                            showBanner('success', '✅ Successfully generated with <strong>gemini-3.8-live</strong>!');
+                            startGenerateBtn.disabled = false;
+                            try { activeSocket.close(); } catch (e) { }
+                        }
+                    }
+                };
+
+                activeSocket.onerror = (err) => {
+                    clearTimeout(connectionTimeout);
+                    console.error("WebSocket error with gemini-3.8-live:", err);
+                    if (!receivedAnyText) {
+                        setStatus('', 'Error');
+                        showBanner('error', '❌ <strong>Connection Failed:</strong> Could not connect to <code>gemini-3.8-live</code> via WebSocket. Please verify your Gemini API key is valid.');
+                        startGenerateBtn.disabled = false;
+                    }
+                };
+
+                activeSocket.onclose = (e) => {
+                    clearTimeout(connectionTimeout);
+                    if (!receivedAnyText && !setupAcknowledged) {
+                        setStatus('', 'Closed');
+                        showBanner('error', `❌ <strong>Session Closed:</strong> WebSocket connection closed (Code ${e.code || 'unknown'}). Ensure your API key has access to the Live API.`);
+                    }
+                    startGenerateBtn.disabled = false;
+                };
+
+            } catch (err) {
+                clearTimeout(connectionTimeout);
+                console.error("WS initialization exception:", err);
+                showBanner('error', `❌ Live API Error: ${err.message}`);
+                startGenerateBtn.disabled = false;
+            }
+        }
+
+        // ========================================================
+        // DOWNLOAD LOSSLESS 3:4 PNG IMAGE
+        // ========================================================
+        downloadPngBtn.addEventListener('click', async () => {
+            const originalText = downloadPngBtn.innerHTML;
+            downloadPngBtn.innerHTML = "<span>⏳</span> Rendering PNG...";
+            downloadPngBtn.disabled = true;
+
+            if (document.fonts) {
+                await document.fonts.ready;
+            }
+
+            html2canvas(printableCard, {
+                scale: 3,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                logging: false
+            }).then(canvas => {
+                const safeTitle = cardTitle.textContent.trim().replace(/[^a-zA-Z0-9_\u0980-\u09FF]/g, '_') || 'Bilingual_Card';
+                const link = document.createElement('a');
+                link.download = `${safeTitle}_3x4.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+
+                downloadPngBtn.innerHTML = originalText;
+                downloadPngBtn.disabled = false;
+            }).catch(err => {
+                console.error(err);
+                showBanner('error', `Render Error: ${err.message}`);
+                downloadPngBtn.innerHTML = originalText;
+                downloadPngBtn.disabled = false;
+            });
+        });
+    </script>
+</body>
+
+</html>
