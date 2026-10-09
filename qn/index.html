@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Image Generator (3:4)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-green: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #1e293b 0%, var(--bg-dark) 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.6);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1500px;
+      margin: 0 auto;
+      width: 100%;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 1.75rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      height: fit-content;
+    }
+
+    .panel-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .color-picker-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      padding: 6px 10px;
+      border-radius: 10px;
+    }
+
+    .color-picker-wrap input[type="color"] {
+      border: none;
+      background: none;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .preset-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .preset-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preset-chip:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .preset-chip.active {
+      border-color: var(--accent);
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+    }
+
+    .preset-dots {
+      display: flex;
+      gap: 3px;
+    }
+
+    .preset-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.2);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      transform: translateY(-2px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    /* Sticky Preview Section */
+    .preview-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      position: sticky;
+      top: 5.5rem;
+      max-height: calc(100vh - 7rem);
+    }
+
+    .canvas-wrapper {
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+      border-radius: 12px;
+      overflow: hidden;
+      max-height: calc(100vh - 10rem);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: calc(100vh - 10rem);
+      aspect-ratio: 3 / 4;
+      object-fit: contain;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .status-pill.error {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 9 6 6m0-6-6 6"/>
+      </svg>
+      <span>QuizCard Studio</span>
+      <span class="logo-badge">3:4 Ratio</span>
+    </div>
+    <div id="data-status" class="status-pill">
+      <span class="status-dot"></span>
+      <span id="status-text">Ready</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Controls Panel -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>Settings & Generation</span>
+      </div>
+
+      <div class="form-group">
+        <label>JSON Data Source URL</label>
+        <input type="text" id="json-url" value="https://cdn.jsdelivr.net/gh/streakaliver/cdn@main/qna.json" placeholder="https://..." />
+      </div>
+
+      <!-- Color Presets -->
+      <div class="form-group">
+        <label>Theme & Color Presets</label>
+        <div class="preset-container" id="presets-wrap">
+          <button type="button" class="preset-chip active" data-bg="#fffef8" data-q="#000000" data-let="#d92d20" data-opt="#15803d">
+            <div class="preset-dots">
+              <span class="preset-dot" style="background: #fffef8;"></span>
+              <span class="preset-dot" style="background: #000000;"></span>
+              <span class="preset-dot" style="background: #d92d20;"></span>
+              <span class="preset-dot" style="background: #15803d;"></span>
+            </div>
+            <span>Warm Cream (Default)</span>
+          </button>
+
+          <button type="button" class="preset-chip" data-bg="#ffffff" data-q="#000000" data-let="#e11d48" data-opt="#059669">
+            <div class="preset-dots">
+              <span class="preset-dot" style="background: #ffffff;"></span>
+              <span class="preset-dot" style="background: #000000;"></span>
+              <span class="preset-dot" style="background: #e11d48;"></span>
+              <span class="preset-dot" style="background: #059669;"></span>
+            </div>
+            <span>Clean White</span>
+          </button>
+
+          <button type="button" class="preset-chip" data-bg="#fffdfa" data-q="#0f172a" data-let="#4f46e5" data-opt="#0284c7">
+            <div class="preset-dots">
+              <span class="preset-dot" style="background: #fffdfa;"></span>
+              <span class="preset-dot" style="background: #0f172a;"></span>
+              <span class="preset-dot" style="background: #4f46e5;"></span>
+              <span class="preset-dot" style="background: #0284c7;"></span>
+            </div>
+            <span>Indigo Ocean</span>
+          </button>
+
+          <button type="button" class="preset-chip" data-bg="#faf5ff" data-q="#1e1b4b" data-let="#9333ea" data-opt="#0d9488">
+            <div class="preset-dots">
+              <span class="preset-dot" style="background: #faf5ff;"></span>
+              <span class="preset-dot" style="background: #1e1b4b;"></span>
+              <span class="preset-dot" style="background: #9333ea;"></span>
+              <span class="preset-dot" style="background: #0d9488;"></span>
+            </div>
+            <span>Purple Teal</span>
+          </button>
+
+          <button type="button" class="preset-chip" data-bg="#0f172a" data-q="#f8fafc" data-let="#f43f5e" data-opt="#38bdf8">
+            <div class="preset-dots">
+              <span class="preset-dot" style="background: #0f172a;"></span>
+              <span class="preset-dot" style="background: #f8fafc;"></span>
+              <span class="preset-dot" style="background: #f43f5e;"></span>
+              <span class="preset-dot" style="background: #38bdf8;"></span>
+            </div>
+            <span>Dark Night</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Items per Image</label>
+          <input type="number" id="q-count" value="3" min="1" max="5" />
+        </div>
+        <div class="form-group">
+          <label>Canvas Background</label>
+          <div class="color-picker-wrap">
+            <input type="color" id="color-bg" value="#fffef8" />
+            <span id="label-bg" style="font-size: 0.8rem; color: var(--text-muted);">#fffef8</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Question Text Color</label>
+          <div class="color-picker-wrap">
+            <input type="color" id="color-question" value="#000000" />
+            <span id="label-question" style="font-size: 0.8rem; color: var(--text-muted);">#000000</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Option Letter Color</label>
+          <div class="color-picker-wrap">
+            <input type="color" id="color-letter" value="#d92d20" />
+            <span id="label-letter" style="font-size: 0.8rem; color: var(--text-muted);">#d92d20</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Option Text Color</label>
+          <div class="color-picker-wrap">
+            <input type="color" id="color-option" value="#15803d" />
+            <span id="label-option" style="font-size: 0.8rem; color: var(--text-muted);">#15803d</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Export Quality / Resolution</label>
+          <select id="export-res">
+            <option value="1">Standard HD (1080 × 1440)</option>
+            <option value="2" selected>2× High Quality (2160 × 2880) - Recommended</option>
+            <option value="3">3× Ultra High (3240 × 4320)</option>
+            <option value="4">4× Super 4K (4320 × 5760)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Watermark / Footer Text</label>
+        <input type="text" id="watermark-text" value="@Vocabulary.bd" placeholder="@YourBrand" />
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="btn-generate">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+          Generate Random Image
+        </button>
+
+        <button class="btn btn-success" id="btn-download">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          Download Image (PNG)
+        </button>
+      </div>
+
+      <div class="form-group" style="margin-top: 0.5rem;">
+        <label>Selected Questions</label>
+        <div id="preview-list" style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; max-height: 140px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
+          Click "Generate Random Image" to load questions.
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Preview Area (Sticky) -->
+    <div class="preview-container">
+      <div class="canvas-wrapper">
+        <canvas id="quizCanvas" width="1080" height="1440"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Fallback data matching reference
+    const defaultData = [
+      { id: 1, question: "I ___ a student.", options: ["Is", "Are", "Am"], answer: "Am" },
+      { id: 2, question: "You ___ very kind.", options: ["Is", "Are", "Am"], answer: "Are" },
+      { id: 3, question: "He ___ to school every day.", options: ["Go", "Goes", "Going"], answer: "Goes" },
+      { id: 4, question: "She ___ watching TV.", options: ["are", "am", "is"], answer: "is" },
+      { id: 5, question: "They ___ playing football.", options: ["are", "is", "am"], answer: "are" },
+      { id: 6, question: "We ___ ready for the exam.", options: ["am", "are", "is"], answer: "are" },
+      { id: 7, question: "It ___ raining outside.", options: ["is", "are", "am"], answer: "is" }
+    ];
+
+    let dataset = [...defaultData];
+    let currentQuestions = [];
+
+    const canvas = document.getElementById('quizCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // DOM Elements
+    const jsonUrlInput = document.getElementById('json-url');
+    const qCountInput = document.getElementById('q-count');
+    const colorBg = document.getElementById('color-bg');
+    const colorQuestion = document.getElementById('color-question');
+    const colorLetter = document.getElementById('color-letter');
+    const colorOption = document.getElementById('color-option');
+    const watermarkInput = document.getElementById('watermark-text');
+    const btnGenerate = document.getElementById('btn-generate');
+    const btnDownload = document.getElementById('btn-download');
+    const statusText = document.getElementById('status-text');
+    const previewList = document.getElementById('preview-list');
+
+    // Label indicators
+    const labelBg = document.getElementById('label-bg');
+    const labelQuestion = document.getElementById('label-question');
+    const labelLetter = document.getElementById('label-letter');
+    const labelOption = document.getElementById('label-option');
+
+    function updateColorLabels() {
+      if (labelBg) labelBg.textContent = colorBg.value;
+      if (labelQuestion) labelQuestion.textContent = colorQuestion.value;
+      if (labelLetter) labelLetter.textContent = colorLetter.value;
+      if (labelOption) labelOption.textContent = colorOption.value;
+    }
+
+    // Presets click handling
+    const presetButtons = document.querySelectorAll('.preset-chip');
+    presetButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        presetButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        colorBg.value = btn.dataset.bg;
+        colorQuestion.value = btn.dataset.q;
+        colorLetter.value = btn.dataset.let;
+        colorOption.value = btn.dataset.opt;
+
+        updateColorLabels();
+        if (currentQuestions.length > 0) {
+          drawCanvas(currentQuestions);
+        }
+      });
+    });
+
+    // Fetch JSON Dataset
+    async function loadDataset() {
+      const url = jsonUrlInput.value.trim();
+      if (!url) return;
+
+      try {
+        statusText.textContent = "Fetching JSON...";
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("HTTP error " + response.status);
+        const data = await response.json();
+        
+        if (Array.isArray(data) && data.length > 0) {
+          dataset = data;
+          statusText.textContent = `Loaded ${dataset.length} questions`;
+        } else if (data && typeof data === 'object' && Array.isArray(data.questions)) {
+          dataset = data.questions;
+          statusText.textContent = `Loaded ${dataset.length} questions`;
+        }
+      } catch (err) {
+        console.warn("Could not fetch remote JSON, using fallback data:", err);
+        statusText.textContent = "Using local data fallback";
+      }
+    }
+
+    // Capitalize first letter helper
+    function formatOptionText(txt) {
+      if (!txt) return "";
+      const s = String(txt).trim();
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    // Format blanks nicely
+    function cleanQuestionText(txt) {
+      if (!txt) return "";
+      return String(txt).replace(/_+/g, "___");
+    }
+
+    // Wrap text into multiple lines if exceeds maxWidth
+    function wrapText(context, text, maxWidth) {
+      const words = text.split(/\s+/);
+      const lines = [];
+      let currentLine = '';
+
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const testLine = currentLine ? currentLine + ' ' + word : word;
+        const testWidth = context.measureText(testLine).width;
+
+        if (testWidth > maxWidth && currentLine !== '') {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+      return lines;
+    }
+
+    const exportResSelect = document.getElementById('export-res');
+
+    // Calculate layout parameters and draw on 3:4 canvas with resolution scaling
+    function drawCanvas(questions, targetCanvas = canvas, scale = 1) {
+      const baseWidth = 1080;
+      const baseHeight = 1440;
+
+      targetCanvas.width = baseWidth * scale;
+      targetCanvas.height = baseHeight * scale;
+
+      const renderCtx = targetCanvas.getContext('2d');
+      renderCtx.imageSmoothingEnabled = true;
+      renderCtx.imageSmoothingQuality = 'high';
+
+      const width = targetCanvas.width;
+      const height = targetCanvas.height;
+
+      // 1. Canvas Background (Custom / #fffef8 Warm Cream)
+      renderCtx.fillStyle = colorBg.value || '#fffef8';
+      renderCtx.fillRect(0, 0, width, height);
+
+      if (!questions || questions.length === 0) return;
+
+      const totalItems = questions.length;
+
+      // Scaled Font styling & measurements
+      const qFontSize = (totalItems <= 2 ? 50 : (totalItems === 3 ? 46 : 40)) * scale;
+      const optFontSize = (totalItems <= 2 ? 46 : (totalItems === 3 ? 42 : 38)) * scale;
+      const qLineHeight = qFontSize * 1.35;
+      const optSpacing = (totalItems <= 2 ? 78 : (totalItems === 3 ? 68 : 58)) * scale;
+      
+      const leftMargin = 120 * scale; 
+      const rightMargin = 120 * scale; 
+      const maxContentWidth = width - leftMargin - rightMargin;
+      
+      const letterOffset = 40 * scale;
+      const optTextOffset = 85 * scale;
+
+      const letterCols = ["A).", "B).", "C).", "D).", "E)."];
+
+      // First Pass: Measure total height of each question block
+      renderCtx.font = `800 ${qFontSize}px 'Plus Jakarta Sans', sans-serif`;
+      
+      const blocks = questions.map((q, idx) => {
+        const qNum = `${idx + 1}.`;
+        const qText = cleanQuestionText(q.question || q.q || "");
+        const numWidth = renderCtx.measureText(qNum).width;
+        const questionTextMaxWidth = maxContentWidth - (numWidth + (20 * scale));
+
+        // Calculate wrapped lines for the question text
+        const qLines = wrapText(renderCtx, qText, questionTextMaxWidth);
+        const rawOptions = q.options || q.choices || [];
+        
+        const qTextTotalHeight = qLines.length * qLineHeight;
+        const optGap = 54 * scale; // Generous vertical gap between question text and options
+        const optionsTotalHeight = rawOptions.length > 0 ? (rawOptions.length - 1) * optSpacing : 0;
+        const totalBlockHeight = qTextTotalHeight + optGap + optionsTotalHeight;
+
+        return {
+          qNum,
+          numWidth,
+          qLines,
+          rawOptions,
+          totalBlockHeight,
+          qTextTotalHeight,
+          optGap
+        };
+      });
+
+      // Compute total content height & spacing to vertically center perfectly
+      const totalBlocksContentHeight = blocks.reduce((acc, b) => acc + b.totalBlockHeight, 0);
+      const availableSpace = (height - (180 * scale)) - totalBlocksContentHeight;
+      
+      let interBlockSpacing;
+      let startY;
+
+      if (totalItems === 1) {
+        interBlockSpacing = 0;
+        startY = (height - totalBlocksContentHeight) / 2 - (20 * scale);
+      } else {
+        interBlockSpacing = Math.max(70 * scale, availableSpace / (totalItems + 1));
+        startY = (height - (totalBlocksContentHeight + interBlockSpacing * (totalItems - 1))) / 2 - (20 * scale);
+      }
+
+      if (startY < 110 * scale) startY = 110 * scale;
+
+      // Second Pass: Draw each question block
+      let currentY = startY;
+
+      blocks.forEach((block) => {
+        renderCtx.textAlign = 'left';
+        renderCtx.textBaseline = 'alphabetic';
+
+        // Draw Question Number & Text Lines
+        renderCtx.font = `800 ${qFontSize}px 'Plus Jakarta Sans', sans-serif`;
+        renderCtx.fillStyle = colorQuestion.value;
+
+        const firstLineY = currentY + qFontSize;
+        renderCtx.fillText(block.qNum, leftMargin, firstLineY);
+
+        block.qLines.forEach((line, lIdx) => {
+          const lineY = currentY + qFontSize + (lIdx * qLineHeight);
+          const lineX = leftMargin + block.numWidth + (20 * scale);
+          renderCtx.fillText(line, lineX, lineY);
+        });
+
+        const optStartY = currentY + block.qTextTotalHeight + block.optGap + (optFontSize * 0.4);
+
+        // Draw Options
+        block.rawOptions.forEach((opt, optIdx) => {
+          const optY = optStartY + (optIdx * optSpacing);
+          const letterStr = letterCols[optIdx] || `${String.fromCharCode(65 + optIdx)}).`;
+          const optStr = formatOptionText(opt);
+
+          // Option Letter
+          renderCtx.font = `800 ${optFontSize}px 'Plus Jakarta Sans', sans-serif`;
+          renderCtx.fillStyle = colorLetter.value;
+          renderCtx.fillText(letterStr, leftMargin + letterOffset, optY);
+
+          // Option Text
+          renderCtx.fillStyle = colorOption.value;
+          const optMaxWidth = maxContentWidth - letterOffset - optTextOffset;
+          const optLines = wrapText(renderCtx, optStr, optMaxWidth);
+          renderCtx.fillText(optLines[0] || optStr, leftMargin + letterOffset + optTextOffset, optY);
+        });
+
+        currentY += block.totalBlockHeight + interBlockSpacing;
+      });
+
+      // Watermark Footer
+      const watermark = watermarkInput.value.trim();
+      if (watermark) {
+        renderCtx.textAlign = 'center';
+        renderCtx.textBaseline = 'middle';
+        renderCtx.font = `700 ${36 * scale}px 'Plus Jakarta Sans', sans-serif`;
+        renderCtx.fillStyle = colorBg.value === '#0f172a' ? '#64748b' : '#94a3b8';
+        renderCtx.fillText(watermark, width / 2, height - (105 * scale));
+      }
+    }
+
+    // Pick random items from dataset
+    function generateRandom() {
+      const count = parseInt(qCountInput.value, 10) || 3;
+      const shuffled = [...dataset].sort(() => 0.5 - Math.random());
+      currentQuestions = shuffled.slice(0, count);
+
+      // Update Preview List
+      previewList.innerHTML = currentQuestions.map((q, i) => `
+        <div style="margin-bottom: 6px;">
+          <strong>${i + 1}. ${cleanQuestionText(q.question)}</strong>
+          <span style="color: #64748b;">(${q.options ? q.options.join(', ') : ''})</span>
+        </div>
+      `).join('');
+
+      drawCanvas(currentQuestions);
+    }
+
+    // Download generated image with high resolution rendering
+    function downloadImage() {
+      const scale = parseFloat(exportResSelect.value) || 2;
+      
+      // Create offscreen high-res canvas
+      const exportCanvas = document.createElement('canvas');
+      drawCanvas(currentQuestions, exportCanvas, scale);
+
+      exportCanvas.toBlob((blob) => {
+        if (!blob) return;
+        const link = document.createElement('a');
+        link.download = `quiz_${exportCanvas.width}x${exportCanvas.height}_${Date.now()}.png`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      }, 'image/png');
+    }
+
+    // Event listeners
+    btnGenerate.addEventListener('click', generateRandom);
+    btnDownload.addEventListener('click', downloadImage);
+
+    // Live update on color / count / watermark changes
+    [colorBg, colorQuestion, colorLetter, colorOption, watermarkInput, qCountInput].forEach(elem => {
+      elem.addEventListener('input', () => {
+        updateColorLabels();
+        // Remove active preset if manual color picked
+        if (elem === colorBg || elem === colorQuestion || elem === colorLetter || elem === colorOption) {
+          presetButtons.forEach(b => b.classList.remove('active'));
+        }
+        if (elem === qCountInput) {
+          generateRandom();
+        } else if (currentQuestions.length > 0) {
+          drawCanvas(currentQuestions);
+        }
+      });
+    });
+
+    jsonUrlInput.addEventListener('change', async () => {
+      await loadDataset();
+      generateRandom();
+    });
+
+    // Initial boot
+    (async () => {
+      await document.fonts.ready;
+      await loadDataset();
+      generateRandom();
+    })();
+  </script>
+</body>
+</html>
